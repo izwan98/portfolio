@@ -169,19 +169,19 @@
         </div>
 
         {{-- Advisor --}}
-        <div class="advisor">
-            <div class="adv-tabs" role="tablist">
+        <div class="coach-panel">
+            <div class="sug-tabs" role="tablist">
                 <button type="button" role="tab" :class="tab === 'pick' && 'on'" @click="tab = 'pick'">Our next pick · by lane</button>
                 <button type="button" role="tab" :class="tab === 'enemy' && 'on'" @click="tab = 'enemy'">Enemy may pick</button>
                 <button type="button" role="tab" :class="tab === 'bans' && 'on'" @click="tab = 'bans'">Ban these</button>
             </div>
 
-            <div class="adv-body">
+            <div class="sug-body">
                 <template x-if="loading"><p class="muted">Loading hero data…</p></template>
 
                 <template x-if="!loading && tab === 'pick'">
                     <div>
-                        <p class="adv-hint">
+                        <p class="sug-hint">
                             <template x-if="advice.byLane.length">
                                 <span>Lanes we still need: <b x-text="advice.byLane.map(c => laneLabel[c.lane]).join(', ')"></b>. Each hero is ranked by counters vs the enemy picks, synergy with ours, win rate at <b x-text="rank.label"></b> and how contested it is (pick/ban rate).</span>
                             </template>
@@ -193,15 +193,15 @@
 
                 <template x-if="!loading && tab === 'enemy'">
                     <div>
-                        <p class="adv-hint">Most likely enemy picks from what's still open: ban/pick rates at this rank, their missing lanes<template x-if="enemyIds.length && advice.enemyNeeds.length"><span> (<b x-text="advice.enemyNeeds.map(l => laneLabel[l]).join(', ')"></b>)</span></template>, and heroes that counter our picks.</p>
+                        <p class="sug-hint">Most likely enemy picks from what's still open: ban/pick rates at this rank, their missing lanes<template x-if="enemyIds.length && advice.enemyNeeds.length"><span> (<b x-text="advice.enemyNeeds.map(l => laneLabel[l]).join(', ')"></b>)</span></template>, and heroes that counter our picks.</p>
                         @include('mlbb-draft.partials.advice-list', ['list' => 'advice.enemy', 'mode' => 'enemy'])
                     </div>
                 </template>
 
                 <template x-if="!loading && tab === 'bans'">
                     <div>
-                        <p class="adv-hint wave-note" x-show="waveNote" x-text="waveNote"></p>
-                        <p class="adv-hint">Biggest threats still open. Heroes in the team pool are never suggested, and heroes that counter them (or our picks) rank higher.</p>
+                        <p class="sug-hint wave-note" x-show="waveNote" x-text="waveNote"></p>
+                        <p class="sug-hint">Biggest threats still open. Heroes in the team pool are never suggested, and heroes that counter them (or our picks) rank higher.</p>
                         @include('mlbb-draft.partials.advice-list', ['list' => 'advice.bans', 'mode' => 'ban'])
 
                         <template x-if="advice.byLane.length">
