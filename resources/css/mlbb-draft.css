@@ -589,13 +589,13 @@ input:focus {
     text-transform: none;
 }
 
-.advisor {
+.coach-panel {
     border: 1px solid rgb(232 182 76 / 0.3);
     border-radius: 14px;
     background: linear-gradient(180deg, rgb(232 182 76 / 0.06), var(--panel) 30%);
 }
 
-.adv-tabs {
+.sug-tabs {
     display: flex;
     gap: 2px;
     padding: 6px;
@@ -603,7 +603,7 @@ input:focus {
     border-bottom: 1px solid var(--line);
 }
 
-.adv-tabs button {
+.sug-tabs button {
     flex-shrink: 0;
     padding: 6px 12px;
     border: 0;
@@ -613,26 +613,26 @@ input:focus {
     font-weight: 600;
 }
 
-.adv-tabs button.on {
+.sug-tabs button.on {
     background: var(--panel-2);
     color: var(--gold-2);
 }
 
-.adv-body {
+.sug-body {
     padding: 10px 12px 12px;
 }
 
-.adv-hint {
+.sug-hint {
     margin: 0 0 8px;
     color: var(--muted);
     font-size: 12.5px;
 }
 
-.adv-hint b {
+.sug-hint b {
     color: var(--ink);
 }
 
-.adv-list {
+.sug-list {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
     gap: 8px;
@@ -641,7 +641,7 @@ input:focus {
     list-style: none;
 }
 
-.adv-item {
+.sug-item {
     display: flex;
     gap: 10px;
     padding: 8px;
@@ -650,7 +650,7 @@ input:focus {
     background: var(--bg-2);
 }
 
-.adv-hero {
+.sug-hero {
     position: relative;
     flex-shrink: 0;
     width: 52px;
@@ -662,17 +662,17 @@ input:focus {
     background: var(--panel);
 }
 
-.adv-hero img {
+.sug-hero img {
     width: 100%;
     height: 100%;
     object-fit: cover;
 }
 
-.adv-hero:hover:not(:disabled) {
+.sug-hero:hover:not(:disabled) {
     box-shadow: 0 0 0 2px var(--gold);
 }
 
-.adv-no {
+.sug-no {
     position: absolute;
     top: 2px;
     left: 2px;
@@ -688,11 +688,11 @@ input:focus {
     font-weight: 700;
 }
 
-.adv-text {
+.sug-text {
     min-width: 0;
 }
 
-.adv-name {
+.sug-name {
     display: flex;
     flex-wrap: wrap;
     align-items: baseline;
@@ -708,7 +708,7 @@ input:focus {
     font-weight: 600;
 }
 
-.adv-wr {
+.sug-wr {
     margin-left: auto;
     font-family: var(--head);
     font-weight: 600;
@@ -1027,7 +1027,7 @@ input:focus {
         gap: 6px;
     }
 
-    .adv-list {
+    .sug-list {
         grid-template-columns: minmax(0, 1fr);
     }
 
@@ -1630,7 +1630,7 @@ input:focus {
     gap: 8px;
 }
 
-.lane-pick .adv-hero {
+.lane-pick .sug-hero {
     width: 46px;
     height: 46px;
 }

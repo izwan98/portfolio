@@ -1,15 +1,15 @@
-<ol class="adv-list">
+<ol class="sug-list">
     <template x-for="(r, i) in {{ $list }}" :key="r.id">
-        <li class="adv-item">
-            <button type="button" class="adv-hero" @click="choose(r.id)" :disabled="!d.active" :title="d.active ? 'Put ' + hero(r.id)?.name + ' in the active slot' : ''">
-                <span class="adv-no" x-text="i + 1"></span>
+        <li class="sug-item">
+            <button type="button" class="sug-hero" @click="choose(r.id)" :disabled="!d.active" :title="d.active ? 'Put ' + hero(r.id)?.name + ' in the active slot' : ''">
+                <span class="sug-no" x-text="i + 1"></span>
                 <img :src="img(r.id, 80)" :alt="hero(r.id)?.name">
             </button>
-            <div class="adv-text">
-                <div class="adv-name">
+            <div class="sug-text">
+                <div class="sug-name">
                     <b x-text="hero(r.id)?.name"></b>
                     <span class="lane-chip" x-text="hero(r.id)?.lanes.map(l => laneLabel[l]).join('/')"></span>
-                    <span class="adv-wr" :class="wrClass(r.id)" x-text="wr(r.id)"></span>
+                    <span class="sug-wr" :class="wrClass(r.id)" x-text="wr(r.id)"></span>
                 </div>
                 <ul class="reasons">
                     @if ($mode === 'pick' || $mode === 'plan')
