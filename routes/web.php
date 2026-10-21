@@ -4,9 +4,19 @@ use App\Http\Controllers\ApiDetectiveController;
 use App\Http\Controllers\MlbbDraftController;
 use Illuminate\Support\Facades\Route;
 
+// Landing page: a card for every project in this app.
 Route::get('/', function () {
-    return view('welcome');
-});
+    return view('home', ['projects' => [
+        ['route' => 'portfolio', 'title' => 'Portfolio', 'tag' => 'About me', 'accent' => '#7c6cff',
+            'description' => 'Izwan Salim — Full Stack Developer. Experience, projects and the stack I work with.'],
+        ['route' => 'api-detective.index', 'title' => 'API Detective', 'tag' => 'Developer tool', 'accent' => '#f5b544',
+            'description' => 'Point it at an OpenAPI spec, a docs page or a live API. It finds the endpoints, explains them and lets you test them.'],
+        ['route' => 'mlbb-draft.index', 'title' => 'MLBB Draft', 'tag' => 'Mobile Legends', 'accent' => '#3b82f6',
+            'description' => 'Ranked and MPL-style draft board for captains: bans, per-lane pick suggestions and counters, updated daily.'],
+        ['route' => 'triple-t', 'title' => 'Tung Tung Tung Sahur', 'tag' => 'Rhythm game', 'accent' => '#e0a96d',
+            'description' => 'Hit the tungs on the beat and land every SAHUR to wake the whole kampung before imsak.'],
+    ]]);
+})->name('home');
 
 Route::get('/me', function () {
     return view('portfolio.index', ['p' => config('portfolio')]);
