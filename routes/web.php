@@ -9,3 +9,5 @@ Route::get('/', function () {
 Route::get('/me', function () {
     return view('portfolio.index', ['p' => config('portfolio')]);
 })->name('portfolio');
+
+Route::view('/triple-t', 'triple-t.index')->name('triple-t');
