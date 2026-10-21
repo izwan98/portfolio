@@ -47,7 +47,15 @@
 </header>
 
 {{-- Setup --}}
-<section class="setup">
+<section class="setup" :class="showSetup && 'open'">
+    <button type="button" class="setup-toggle" @click="showSetup = !showSetup" :aria-expanded="showSetup">
+        <span class="setup-summary">
+            <b x-text="template.name"></b>
+            <span x-text="(weFirst ? 'We ban & pick first' : 'We ban & pick second') + (pool.length ? ' · ' + pool.length + ' in pool' : '')"></span>
+        </span>
+        <span class="setup-chev" x-text="showSetup ? 'Done' : 'Setup'"></span>
+    </button>
+
     <div class="setup-group">
         <span class="setup-label">Our team bans &amp; picks</span>
         <div class="seg">
@@ -126,14 +134,12 @@
             </template>
         </ol>
 
-        <ul class="checks">
-            <template x-for="(n, i) in advice.check" :key="i"><li :class="'check-' + n.level" x-text="n.text"></li></template>
-        </ul>
     </aside>
 
     {{-- =========================================================== centre --}}
     <section class="centre">
-        <div class="turn" :class="d.active ? 'turn-' + d.active.team : 'turn-done'">
+        <div class="turn" :class="d.active ? 'turn-' + d.active.team : 'turn-done'"
+             x-init="new ResizeObserver(() => document.documentElement.style.setProperty('--turn-h', $el.offsetHeight + 'px')).observe($el)">
             <span class="turn-label" x-text="turnLabel()"></span>
             <div class="turn-actions" x-show="phase === 'ban'">
                 <span class="turn-hint">Banning now:</span>
@@ -297,7 +303,14 @@
             </template>
         </ol>
 
-        <details class="tips" open>
+    </aside>
+
+    {{-- ===================================================== notes --}}
+    <aside class="notes" aria-label="Team check and draft tips">
+        <ul class="checks">
+            <template x-for="(n, i) in advice.check" :key="i"><li :class="'check-' + n.level" x-text="n.text"></li></template>
+        </ul>
+        <details class="tips" x-init="$el.open = matchMedia('(min-width: 1101px)').matches">
             <summary>Draft tips · <span x-text="rank.label"></span></summary>
             <ul>
                 <template x-if="rank.bans === 0"><li>No bans below Epic — pick heroes the team is comfortable with that win lanes alone. The advisor still counter-picks the enemy.</li></template>

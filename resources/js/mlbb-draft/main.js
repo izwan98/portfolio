@@ -104,6 +104,7 @@ Alpine.data('draft', () => ({
     sort: 'smart',
     tab: 'pick',
     showPool: false,
+    showSetup: false,
     poolQuery: '',
 
     async init() {
