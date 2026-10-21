@@ -7,7 +7,6 @@ use App\Services\MlbbDraft\Ranks;
 use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
-use Throwable;
 
 #[Signature('mlbb:refresh {--days=7 : Stats window in days (1, 3, 7, 15 or 30)}')]
 #[Description('Pull fresh MLBB hero win/pick/ban rates for every rank from Rone Arena')]
@@ -22,15 +21,23 @@ class RefreshMlbbData extends Command
             return self::INVALID;
         }
 
-        try {
-            $done = $data->refreshAll($days);
-        } catch (Throwable $e) {
-            $this->error('Refresh failed: '.$e->getMessage());
+        ['done' => $done, 'failed' => $failed] = $data->refreshAll($days);
+
+        $rows = [];
+        foreach ($done as $name => $count) {
+            $rows[] = [$name, 'updated', $count];
+        }
+        foreach ($failed as $name => $error) {
+            $rows[] = [$name, 'FAILED — kept previous data', mb_strimwidth($error, 0, 90, '…')];
+        }
+        $this->table(['Dataset', 'Status', 'Items / error'], $rows);
+
+        if ($failed) {
+            $this->warn(count($failed).' dataset(s) failed; the rest were refreshed. Run the command again later to retry them.');
 
             return self::FAILURE;
         }
 
-        $this->table(['Dataset', 'Items'], collect($done)->map(fn ($n, $k) => [$k, $n])->values()->all());
         $this->info("MLBB data refreshed ({$days}-day window).");
 
         return self::SUCCESS;

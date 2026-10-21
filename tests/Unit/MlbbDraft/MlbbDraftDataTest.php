@@ -7,6 +7,7 @@ use App\Services\MlbbDraft\RoneArena;
 use Illuminate\Http\Client\Factory;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Sleep;
 use Tests\TestCase;
 
 class MlbbDraftDataTest extends TestCase
@@ -129,6 +130,38 @@ class MlbbDraftDataTest extends TestCase
         Storage::disk('local')->assertExists('mlbb/heroes.json');
 
         $this->artisan('mlbb:refresh --days=2')->assertExitCode(2);
+    }
+
+    public function test_temporary_server_errors_are_retried(): void
+    {
+        Sleep::fake();
+        Http::fake([
+            '*/api/heroes/rank*' => Http::sequence()
+                ->push('busy', 503)
+                ->push(['code' => 0, 'data' => ['records' => [['data' => ['main_heroid' => 30, 'main_hero_win_rate' => 0.5, 'main_hero_appearance_rate' => 0.01, 'main_hero_ban_rate' => 0.1]]]]]),
+        ]);
+
+        $this->assertSame(0.5, app(RoneArena::class)->rankStats('mythic', 7)[30]['wr']);
+        Http::assertSentCount(2);
+    }
+
+    public function test_one_failing_rank_does_not_stop_the_others(): void
+    {
+        Sleep::fake();
+        self::fakeApi();
+        // Glory keeps answering 503; everything else works.
+        Http::swap(new Factory);
+        Http::fake(['*rank=glory*' => Http::response('down', 503)]);
+        self::fakeApi();
+
+        $result = app(DraftData::class)->refreshAll(7);
+
+        $this->assertSame(['stats:glory'], array_keys($result['failed']));
+        $this->assertStringContainsString('HTTP 503', $result['failed']['stats:glory']);
+        $this->assertSame(2, $result['done']['heroes']);
+        $this->assertCount(6, $result['done'], 'heroes + 5 ranks still refreshed');
+
+        $this->artisan('mlbb:refresh')->assertFailed()->expectsOutputToContain('FAILED');
     }
 
     public function test_the_refresh_is_scheduled_daily(): void

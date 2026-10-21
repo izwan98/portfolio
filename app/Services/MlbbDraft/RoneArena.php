@@ -4,6 +4,7 @@ namespace App\Services\MlbbDraft;
 
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Http\Client\Pool;
+use Illuminate\Http\Client\RequestException;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
 use RuntimeException;
@@ -153,11 +154,16 @@ class RoneArena
 
     private function configure(PendingRequest $request): PendingRequest
     {
+        // Fall back to the public API if the setting is missing (e.g. a config cache built before it existed).
+        $base = rtrim((string) (config('services.rone_arena.url') ?: 'https://arena.rone.dev'), '/');
+
         $request = $request
-            ->baseUrl(rtrim((string) config('services.rone_arena.url'), '/'))
+            ->baseUrl($base)
             ->acceptJson()
             ->connectTimeout(8)
             ->timeout(25)
+            // The API occasionally answers 5xx or drops a connection — retry those a few times.
+            ->retry(3, fn (int $attempt) => $attempt * 1500, fn (\Throwable $e) => ! $e instanceof RequestException || $e->response->serverError(), throw: false)
             ->withHeaders(['User-Agent' => 'mlbb-draft/1.0']);
 
         if ($token = config('services.rone_arena.token')) {
@@ -170,7 +176,12 @@ class RoneArena
     private function records(mixed $response, string $what): array
     {
         if (! $response instanceof Response || ! $response->successful()) {
-            $status = $response instanceof Response ? $response->status() : 'no response';
+            // Pooled requests hand back the exception itself when the connection fails.
+            $status = match (true) {
+                $response instanceof Response => 'HTTP '.$response->status(),
+                $response instanceof \Throwable => 'connection failed: '.$response->getMessage(),
+                default => 'no response',
+            };
             throw new RuntimeException("Could not load {$what} from Rone Arena ({$status}).");
         }
 
