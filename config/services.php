@@ -28,6 +28,12 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'rone_arena' => [
+        'url' => env('RONE_ARENA_URL', 'https://arena.rone.dev'),
+        // Optional — the hero endpoints used by /mlbb-draft are public.
+        'token' => env('RONE_ARENA_TOKEN'),
+    ],
+
     'api_detective' => [
         // Let the request tester and discovery reach localhost / private networks.
         // Keep false anywhere the app is publicly reachable (SSRF).

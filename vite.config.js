@@ -15,6 +15,8 @@ export default defineConfig({
                 'resources/js/triple-t/main.js',
                 'resources/css/api-detective.css',
                 'resources/js/api-detective/main.js',
+                'resources/css/mlbb-draft.css',
+                'resources/js/mlbb-draft/main.js',
             ],
             refresh: true,
             fonts: [
