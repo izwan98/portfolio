@@ -76,14 +76,28 @@ class DraftData
     /**
      * Refresh everything the draft board needs up front. Called daily by the scheduler.
      *
-     * @return array<string, int> what was refreshed => item count
+     * Each dataset is fetched on its own: if one fails (e.g. the API answers 503 for a rank),
+     * the others still refresh and the failed one keeps its last good snapshot.
+     *
+     * @return array{done: array<string, int>, failed: array<string, string>}
      */
     public function refreshAll(int $days = Ranks::DEFAULT_WINDOW): array
     {
-        $done = ['heroes' => count($this->heroes(force: true))];
+        $jobs = ['heroes' => fn () => $this->api->heroes()] + collect(Ranks::API_RANKS)
+            ->mapWithKeys(fn ($rank) => ["stats:{$rank}" => fn () => $this->api->rankStats($rank, $days)])
+            ->all();
 
-        foreach (Ranks::API_RANKS as $rank) {
-            $done["stats:{$rank}"] = count($this->stats($rank, $days, force: true));
+        $done = [];
+        $failed = [];
+        foreach ($jobs as $name => $fetch) {
+            try {
+                $data = $fetch();
+                $this->write($name === 'heroes' ? 'heroes.json' : 'stats/'.substr($name, 6)."-{$days}.json", $data);
+                $done[$name] = count($data);
+            } catch (Throwable $e) {
+                $failed[$name] = $e->getMessage();
+                Log::warning("mlbb-draft: refresh of {$name} failed", ['error' => $e->getMessage()]);
+            }
         }
 
         // Matchups refresh lazily (they're per hero); drop yesterday's so nothing stale lingers.
@@ -93,7 +107,7 @@ class DraftData
             }
         }
 
-        return $done;
+        return ['done' => $done, 'failed' => $failed];
     }
 
     // ---------------------------------------------------------------- storage
