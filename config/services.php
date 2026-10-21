@@ -28,6 +28,12 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'api_detective' => [
+        // Let the request tester and discovery reach localhost / private networks.
+        // Keep false anywhere the app is publicly reachable (SSRF).
+        'allow_private_hosts' => env('API_DETECTIVE_ALLOW_PRIVATE_HOSTS', false),
+    ],
+
     'slack' => [
         'notifications' => [
             'bot_user_oauth_token' => env('SLACK_BOT_USER_OAUTH_TOKEN'),

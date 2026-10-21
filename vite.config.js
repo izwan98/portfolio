@@ -13,6 +13,8 @@ export default defineConfig({
                 'resources/js/portfolio.js',
                 'resources/css/triple-t.css',
                 'resources/js/triple-t/main.js',
+                'resources/css/api-detective.css',
+                'resources/js/api-detective/main.js',
             ],
             refresh: true,
             fonts: [
